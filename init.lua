@@ -1,7 +1,9 @@
 print 'Hello, world!'
 
 require 'lazy.config'
-require("mappings.mapBase").mapbase()
+local mapBase = require 'mappings.mapBase'
+mapBase()
+
 vim.opt.shiftwidth = 2
 vim.opt.clipboard = 'unnamedplus'
 vim.opt.number = true

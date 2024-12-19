@@ -7,7 +7,8 @@ return {
     dependencies = { { "echasnovski/mini.icons", opts = {} } },
     config = function()
       require("oil").setup()
-      require("mappings.mapOil").mapOil()
+      local mapOil = require('mappings.mapOil')
+      mapOil()
     end
   }
 }

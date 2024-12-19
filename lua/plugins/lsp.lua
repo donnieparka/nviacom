@@ -17,17 +17,21 @@ return {
     },
     config = function()
       local lspconfig = require("lspconfig")
-      local capabilities = require('blink.cmp').get_lsp_capabilities()
+      local capabilities = require('blink.cmp').get_lsp_capabilities() -- get capabilities
+
       lspconfig.lua_ls.setup { capabilities = capabilities }
       lspconfig.clangd.setup({})
+
       vim.api.nvim_create_autocmd('LspAttach', {
         callback = function(args)
-          local client = vim.lsp.get_client_by_id(args.data.client_id)
+          local client = vim.lsp.get_client_by_id(args.data.client_id) -- get client
+          local mapLsp = require('mappings.mapLsp')
+          mapLsp()
           if not client then
             return
           end
-          ---@diagnostic disable-next-line
-          if client.supports_method("textDocument/formatting") then
+
+          if client.supports_method("textDocument/formatting") then -- format on save
             vim.api.nvim_create_autocmd("BufWritePre", {
               buffer = args.buf,
               callback = function()
@@ -35,20 +39,34 @@ return {
               end,
             })
           end
+
+          if client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
+            local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false }) -- create highlight augroup
+            vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' },                                        -- highlight on cursor hold
+              {
+                buffer = args.buf,
+                group = highlight_augroup,
+                callback = vim.lsp.buf.document_highlight,
+              })
+
+            vim.api.nvim_create_autocmd({ 'CursorMoved', 'CursorMovedI' },
+              { -- clear highlight on move
+                buffer = args.buf,
+                group = highlight_augroup,
+                callback = vim.lsp.buf.clear_references,
+              })
+
+            vim.api.nvim_create_autocmd('LspDetach', -- clear highlight on detach
+              {
+                group = vim.api.nvim_create_augroup('kickstart-lsp-detach', { clear = true }),
+                callback = function(args2)
+                  vim.lsp.buf.clear_references()
+                  vim.api.nvim_clear_autocmds { group = 'kickstart-lsp-highlight', buffer = args2.buf }
+                end,
+              })
+          end
         end,
       })
     end,
   },
 }
---        group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
---        callback = function(args)
---
---          map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
---          map('gD', vim.lsp.buf.declaration, '[G]oto [D]eclaration')
---          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
---          map('gI', require('telescope.builtin').lsp_implementations, '[G]oto [I]mplementation')
---          map('<space>D', require('telescope.builtin').lsp_type_definitions, 'Type [D]efinition')
---          map('<space>ds', require('telescope.builtin').lsp_document_symbols, '[D]ocument [S]ymbols')
---          map('<space>ws', require('telescope.builtin').lsp_dynamic_workspace_symbols, '[W]orkspace [S]ymbols')
---          map('<space>rn', vim.lsp.buf.rename, '[R]e[n]ame')
---          map('<space>ca', vim.lsp.buf.code_action, '[C]ode [A]ction', { 'n', 'x' })

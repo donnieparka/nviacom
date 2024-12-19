@@ -1,6 +1,4 @@
-return {
-  mapOil = function()
-    local map = require("helpers.map")
-    map('-', '<cmd>Oil<CR>', 'Oil') -- Oil.nvim
-  end
-}
+return function() -- Oil.nvim
+  local map = require("helpers.map")
+  map('-', '<cmd>Oil<CR>', 'Oil')
+end

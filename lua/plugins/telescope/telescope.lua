@@ -15,7 +15,8 @@ return {
       require('telescope').load_extension('fzf')
       pcall(require('telescope').load_extension, 'ui-select')
       require('plugins.telescope.config.multigrep')
-      require("mappings.mapTelescope").mapTelescope()
+      local mapTelescope = require("mappings.mapTelescope")
+      mapTelescope()
     end
   }
 }
