@@ -2,8 +2,10 @@ return {
   {
     "neovim/nvim-lspconfig",
     dependencies = {
-      "williamboman/mason.nvim",
+      { 'j-hui/fidget.nvim',       opts = {} },
+      { 'williamboman/mason.nvim', config = true },
       "williamboman/mason-lspconfig.nvim",
+      'WhoIsSethDaniel/mason-tool-installer.nvim',
       'saghen/blink.cmp',
       {
         "folke/lazydev.nvim",
@@ -25,24 +27,24 @@ return {
       vim.api.nvim_create_autocmd('LspAttach', {
         callback = function(args)
           local client = vim.lsp.get_client_by_id(args.data.client_id) -- get client
-          local mapLsp = require('mappings.mapLsp')
-          mapLsp()
           if not client then
             return
           end
-
-          if client.supports_method("textDocument/formatting") then -- format on save
-            vim.api.nvim_create_autocmd("BufWritePre", {
-              buffer = args.buf,
-              callback = function()
-                vim.lsp.buf.format({ bufnr = args.buf, id = client.id })
-              end,
-            })
-          end
+          local mapLsp = require('mappings.mapLsp')
+          mapLsp()
 
           if client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false }) -- create highlight augroup
-            vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' },                                        -- highlight on cursor hold
+            if client.supports_method("textDocument/formatting") then                                           -- format on save
+              vim.api.nvim_create_autocmd("BufWritePre", {
+                buffer = args.buf,
+                callback = function()
+                  vim.lsp.buf.format({ bufnr = args.buf, id = client.id })
+                end,
+              })
+            end
+
+            vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, -- highlight on cursor hold
               {
                 buffer = args.buf,
                 group = highlight_augroup,

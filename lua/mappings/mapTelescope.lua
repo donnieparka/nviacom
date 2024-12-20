@@ -2,16 +2,40 @@ return function()
   local builtin = require 'telescope.builtin'
   local live_multigrep = require 'plugins.telescope.config.multigrep'
   local map = require('helpers.map')
-  map('<space>hh', builtin.help_tags, '[H]elp! [H]eeeelp!')        -- find help
-  map('<space>sh', builtin.find_files, '[H]ere')                   -- find files
-  map('<space>sg', live_multigrep, '[G]rep')                       -- find string in current folder
-  map('<space>sb', builtin.buffers, '[B]uffers')                   -- find buffers
-  map('<space>sw', builtin.grep_string, '[S]earch current [W]ord') -- search word
-  map('<space>sn',                                                 -- find files in config folder
+  map('<space>hh', builtin.help_tags, '[H]elp! [H]eeeelp!') -- find help
+  map('<space>sk', builtin.keymaps, '[K]eymaps')            -- find keymaps
+  map('<space>sd', builtin.diagnostics, '[D]iagnostics')    -- find diagnostics
+  map('<space>sh', builtin.find_files, '[H]ere')            -- find files
+  map('<space>sg', live_multigrep, '[G]rep')                -- find string in current folder
+  map('<space>sb', builtin.buffers, '[B]uffers')            -- find buffers
+  map('<space>sw', builtin.grep_string, 'current [W]ord')   -- search word
+  map('<space>ss', builtin.builtin, '[S]earch Telescope')   -- search Telescope builtin docs
+  map('<space>sr', builtin.resume, '[R]esume')              -- resume last search
+  map('<space>s.', builtin.oldfiles, 'recent files')        -- find recent files
+  map('<space>/',                                           -- Fuzzily search in current buffer
+    function()
+      builtin.current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+        winblend = 10,
+        previewer = false,
+      })
+    end,
+    '[/] Fuzzily search in current buffer'
+  )
+  map('<space>sn', -- find files in config folder
     function()
       builtin.find_files({ cwd = vim.fn.stdpath('config') })
     end,
-    '[N]eovim')
+    '[N]eovim'
+  )
+  map('<space>s/', -- find string in open files
+    function()
+      builtin.live_grep {
+        grep_open_files = true,
+        prompt_title = 'Live Grep in Open Files',
+      }
+    end,
+    '[S]earch [/] in Open Files'
+  )
 
   -- LSP dependant
   vim.api.nvim_create_autocmd('LspAttach', {
