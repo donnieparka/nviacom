@@ -28,3 +28,4 @@ require('lazy').setup {
     { import = 'plugins.telescope' },
   },
 }
+-- Use `opts = {}` to force a plugin to be loaded.

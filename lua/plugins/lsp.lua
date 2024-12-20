@@ -17,7 +17,7 @@ return {
     },
     config = function()
       local lspconfig = require("lspconfig")
-      local capabilities = require('blink.cmp').get_lsp_capabilities() -- get capabilities
+      local capabilities = require('blink.cmp').get_lsp_capabilities() -- enable blink and get capabilities
 
       lspconfig.lua_ls.setup { capabilities = capabilities }
       lspconfig.clangd.setup({})
