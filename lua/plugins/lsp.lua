@@ -2,10 +2,9 @@ return {
   {
     "neovim/nvim-lspconfig",
     dependencies = {
-      { 'j-hui/fidget.nvim',       opts = {} },
-      { 'williamboman/mason.nvim', config = true },
-      "williamboman/mason-lspconfig.nvim",
-      'WhoIsSethDaniel/mason-tool-installer.nvim',
+      { 'williamboman/mason.nvim' },
+      { 'williamboman/mason-lspconfig.nvim' },
+      { 'j-hui/fidget.nvim',                opts = {} },
       'saghen/blink.cmp',
       {
         "folke/lazydev.nvim",
@@ -22,8 +21,13 @@ return {
       local capabilities = require('blink.cmp').get_lsp_capabilities() -- enable blink and get capabilities
 
       lspconfig.lua_ls.setup { capabilities = capabilities }
-      lspconfig.clangd.setup({})
-
+      lspconfig.clangd.setup { capabilities = capabilities }
+      lspconfig.elixirls.setup {
+        cmd = {
+          "/home/iaco/.local/share/nvim/mason/packages/elixir-ls/language_server.sh"
+        },
+        capabilities = capabilities
+      }
       vim.api.nvim_create_autocmd('LspAttach', {
         callback = function(args)
           local client = vim.lsp.get_client_by_id(args.data.client_id) -- get client
