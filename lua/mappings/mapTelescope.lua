@@ -21,6 +21,11 @@ return function()
     end,
     '[/] Fuzzily search in current buffer'
   )
+  map('<space>sc', function()
+      builtin.find_files({ cwd = '/home/iaco/Documents/code' })
+    end,
+    '[C]ode'
+  )                -- find in code folder
   map('<space>sn', -- find files in config folder
     function()
       builtin.find_files({ cwd = vim.fn.stdpath('config') })

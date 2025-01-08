@@ -37,18 +37,25 @@ return {
           local mapLsp = require('mappings.mapLsp')
           mapLsp()
 
+          if client.supports_method("textDocument/formatting") then -- format on save
+            vim.api.nvim_create_autocmd("BufWritePre", {
+              buffer = args.buf,
+              callback = function()
+                vim.lsp.buf.format({ bufnr = args.buf, id = client.id })
+              end,
+            })
+          elseif vim.bo.filetype == 'elixir' then
+            vim.api.nvim_create_autocmd("BufWritePre", {
+              callback = function()
+                vim.cmd([[lcd %:p:h]])
+                vim.cmd([[silent !mix format %]])
+              end,
+            })
+          end
           if client.supports_method(vim.lsp.protocol.Methods.textDocument_documentHighlight) then
             local highlight_augroup = vim.api.nvim_create_augroup('kickstart-lsp-highlight', { clear = false }) -- create highlight augroup
-            if client.supports_method("textDocument/formatting") then                                           -- format on save
-              vim.api.nvim_create_autocmd("BufWritePre", {
-                buffer = args.buf,
-                callback = function()
-                  vim.lsp.buf.format({ bufnr = args.buf, id = client.id })
-                end,
-              })
-            end
 
-            vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' }, -- highlight on cursor hold
+            vim.api.nvim_create_autocmd({ 'CursorHold', 'CursorHoldI' },                                        -- highlight on cursor hold
               {
                 buffer = args.buf,
                 group = highlight_augroup,
