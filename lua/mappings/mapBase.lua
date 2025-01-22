@@ -12,7 +12,7 @@ return function()
       vim.cmd.vsplit()
       vim.cmd.term()
       vim.cmd.wincmd('J')
-      vim.api.nvim_win_set_height(0, 5)
+      vim.api.nvim_win_set_height(0, 15)
     end,
     '[T]erminal'
   )
